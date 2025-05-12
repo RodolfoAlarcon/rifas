@@ -1,10 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-
-// Importación de estilos de Swiper
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
@@ -20,17 +18,29 @@ interface RaffleSectionProps {
   description: string;
   title: string;
   id: string;
+  price: number;
 }
 
-export const RaffleSection = ({ gallery, precios, percentage, description, title, id }: RaffleSectionProps) => {
-
-  const router = useRouter()
-  const { setCarrito } = useCarritoStore()
+export const RaffleSection = ({ gallery, precios, percentage, description, title, id, price }: RaffleSectionProps) => {
+  const router = useRouter();
+  const { setCarrito } = useCarritoStore();
+  const [quantity, setQuantity] = useState<number>(1);
 
   const handleCarrito = (price: number, numbers: number) => {
-    setCarrito({ id, price, numbers, name: title })
-    router.push('/checkout')
-  }
+    setCarrito({ id, price, numbers, name: title });
+    router.push('/checkout');
+  };
+
+  const handleQuantityChange = (value: number) => {
+    const newValue = quantity + value;
+    setQuantity(newValue < 1 ? 1 : newValue);
+  };
+
+  const handleBuy = () => {
+    const priceMulti = price * quantity; 
+    const numbers = quantity;
+    handleCarrito(priceMulti, numbers);
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-8">
@@ -69,12 +79,11 @@ export const RaffleSection = ({ gallery, precios, percentage, description, title
 
         {/* Contenido de la rifa - Lado derecho */}
         <div className="w-full md:w-3/5 px-4 md:p-0 flex flex-col justify-start">
-
           <h2 className="text-2xl md:text-4xl font-bold mb-4 text-center text-[#b91419]">
             {title}
           </h2>
           <div
-            className="prose text-xl text-justify" // Opcional: usa Tailwind Typography para estilos básicos
+            className="prose text-xl text-justify"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </div>
@@ -102,6 +111,51 @@ export const RaffleSection = ({ gallery, precios, percentage, description, title
           ))}
         </div>
       </div>
+      
+      {/* Controles de cantidad */}
+      <div className="mt-4 px-4 md:p-0 mb-16 flex flex-col items-center justify-center gap-4">
+        <h1 className='text-xl text-center font-bold'>
+            ¿MÁS NÚMEROS?<br />
+            <span className='text-lg font-normal '>
+              Agrega la cantidad de números que desees.
+            </span>
+        </h1>
+        <div className="flex items-center justify-center gap-4">
+          <button 
+            onClick={() => handleQuantityChange(-1)}
+            className="bg-[#b91419] text-white w-10 h-10 rounded-lg flex items-center justify-center text-xl font-bold cursor-pointer"
+            aria-label="Reducir cantidad"
+          >
+            -
+          </button>
+          <input
+            type="number"
+            min="1"
+            value={quantity}
+            onChange={(e) => {
+              const value = parseInt(e.target.value) || 1;
+              setQuantity(value < 1 ? 1 : value);
+            }}
+            className="w-20 text-center border border-[#b91419] rounded-lg py-2 text-center text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#b91419] focus:border-transparent appearance-none"
+          />
+          <button 
+            onClick={() => handleQuantityChange(1)}
+            className="bg-[#b91419] text-white w-10 h-10 rounded-lg flex items-center justify-center text-xl font-bold cursor-pointer"
+            aria-label="Aumentar cantidad"
+          >
+            +
+          </button>
+        </div>
+        
+        {/* Botón de comprar */}
+        <button
+          onClick={handleBuy}
+          className="bg-[#b91419] hover:bg-[#9a1216] text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300"
+        >
+          Comprar ahora
+        </button>
+      </div>
+      
       <div className="mt-4 px-4 md:p-0">
         <ProgressBar
           percentage={percentage}

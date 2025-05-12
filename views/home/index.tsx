@@ -214,7 +214,7 @@ export const HomeView = () => {
                     </h1>
                 </div>
             </div>
-            <RaffleSection id={rifaMasReciente?.id || ''} gallery={gallery} precios={precios} percentage={percentage.occupiedPercentage} description={rifaMasReciente?.description || ''} title={rifaMasReciente?.title || ''} />
+            <RaffleSection id={rifaMasReciente?.id || ''} gallery={gallery} price={rifaMasReciente?.price ? Number(rifaMasReciente.price) : 0} precios={precios} percentage={percentage.occupiedPercentage} description={rifaMasReciente?.description || ''} title={rifaMasReciente?.title || ''} />
 
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <h1 className="text-sm md:text-lg font-bold text-center mb-16">

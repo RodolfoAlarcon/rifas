@@ -17,7 +17,7 @@ export interface Rifa {
     imageUrl: string;
     user_id: string;
     price: string;
-    numbers: string;
+    numbers: number;
     array_numbers: NumberItem[];
     description: string;
     status: number;
