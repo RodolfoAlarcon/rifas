@@ -23,7 +23,7 @@ export const ProgressBar = ({
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
-      <div className="text-right mt-1 text-sm text-gray-600">
+      <div className="text-right mt-1 text-xl font-bold text-gray-600">
         {percentage.toFixed(2)}% vendidos
       </div>
     </div>

@@ -4,6 +4,7 @@ import { Banner } from "@/components/Banner";
 import { RaffleSection } from "@/components/RaffleSection";
 import { GalleryItem, Rifa, TicketPackage } from "@/interface";
 import axios from "axios";
+import { HelpCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 interface FormData {
@@ -26,13 +27,14 @@ export const HomeView = () => {
     useEffect(() => {
         const fetchTalonarios = async () => {
             try {
-                const response = await axios.get('https://rifas.accumed.cloud/api/allTalonarios');
+                const response = await axios.get('https://rifas.soelecsa.com/api/allTalonarios');
 
                 setRifaMasReciente(response.data.data);
                 setFormData({
                     ...formData,
                     id: response.data.data.id
                 })
+                console.log('holanda', response.data.data);
             } catch (err: any) {
                 console.log(err.message);
             }
@@ -49,7 +51,6 @@ export const HomeView = () => {
         }
     }, [rifas]);
 
-    console.log(rifaMasReciente);
 
     const percentage = useMemo(() => {
         if (!rifaMasReciente?.array_numbers) {
@@ -119,7 +120,7 @@ export const HomeView = () => {
 
         try {
 
-            const response = await fetch('https://rifas.accumed.cloud/api/consultNumbers', {
+            const response = await fetch('https://rifas.soelecsa.com/api/consultNumbers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -129,14 +130,29 @@ export const HomeView = () => {
                     email: formData.email
                 })
             });
-        
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error en la solicitud');
+                // Manejar específicamente el error 403
+                if (response.status === 403) {
+                    const errorData = await response.json();
+                    setError(errorData.message || 'No tienes permisos para realizar esta acción');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error en la solicitud');
+                }
+                return;
             }
-        
+
             const data = await response.json();
-            console.log("Números consultados:", data);
+            setAccept(data.message || 'Consulta exitosa');
+            setFormData({
+                ...formData,
+                email: ''
+            });
+
+            setTimeout(() => {
+                setAccept(null);
+            }, 3000);
 
         } catch (error) {
             console.error('Error al procesar:', error);
@@ -191,16 +207,49 @@ export const HomeView = () => {
                     </div>
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 py-16">
+            <div className="max-w-7xl mx-auto px-4 pt-8">
                 <div className='bg-[#c2272d] py-8 px-4'>
                     <h1 className='text-center font-bold text-5xl md:text-6xl text-white'>
-                        CONCURSA Y GANA!
+                        JUEGA Y GANA!
                     </h1>
                 </div>
             </div>
             <RaffleSection id={rifaMasReciente?.id || ''} gallery={gallery} precios={precios} percentage={percentage.occupiedPercentage} description={rifaMasReciente?.description || ''} title={rifaMasReciente?.title || ''} />
 
-            <div className="max-w-7xl mx-auto px-4 pb-16">
+            <div className="max-w-4xl mx-auto px-4 py-8">
+                <h1 className="text-sm md:text-lg font-bold text-center mb-16">
+                    Por la compra de tus tickets, participas automáticamente por premios instantáneos. <br />
+                    Si ves una casilla con el símbolo "?", significa que ese premio aún no ha sido reclamado.<br />
+                    ¡Todavía puedes ganar al instante!
+                </h1>
+                <div className="flex flex-col md:flex-row gap-4 items-center  md:justify-around">
+                    {rifaMasReciente?.array_numbers
+                        ?.filter(num => num.status === 'winner')
+                        .slice(0, 5) // Mostrar solo los primeros 5 ganadores
+                        .map((num) => (
+                            <div
+                                key={num.id}
+                                className="text-[#b91419]  flex items-center justify-center text-4xl font-bold"
+                            >
+                                {num.id}
+                            </div>
+                        ))}
+
+                    {/* Mostrar íconos de incógnita si hay menos de 5 ganadores */}
+                    {Array.from({
+                        length: Math.max(0, 5 - (rifaMasReciente?.array_numbers?.filter(num => num.status === 'winner').length || 0))
+                    }).map((_, index) => (
+                        <div
+                            key={`unknown-${index}`}
+                            className="flex items-center justify-center"
+                        >
+                            <HelpCircle className="w-20 h-20 text-[#b91419]" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 py-16">
                 <h1 className='text-center font-bold text-3xl md:text-4xl text-primary'>
                     CONSULTA TUS NÚMEROS
                 </h1>
@@ -221,6 +270,11 @@ export const HomeView = () => {
                 {error && (
                     <div className="text-red-500 text-center mt-2">
                         {error}
+                    </div>
+                )}
+                {accept && (
+                    <div className="text-green-500 text-center mt-2">
+                        {accept}
                     </div>
                 )}
                 <button

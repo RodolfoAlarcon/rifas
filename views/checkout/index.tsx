@@ -16,7 +16,7 @@ interface FormData {
   ciudad: string;
   id: string;
   numbers: number;
-  recive: File | null;
+  recive: File | null | string;
   email: string;
   provincia: string;
 }
@@ -78,7 +78,7 @@ export default function ChekcOutView() {
   useEffect(() => {
     const fetchProvincias = async () => {
       try {
-        const response = await axios.get('https://rifas.accumed.cloud/api/getCountry');
+        const response = await axios.get('https://rifas.soelecsa.com/api/getCountry');
         setProvincias(response.data);
         setLoadingProvincias(false);
       } catch (err) {
@@ -142,6 +142,12 @@ export default function ChekcOutView() {
       if (formErrors.recive) {
         setFormErrors(prev => ({ ...prev, recive: '' }));
       }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        recive: null
+      }));
+      setFilePreview(null);
     }
   };
 
@@ -174,7 +180,7 @@ export default function ChekcOutView() {
     }
 
     if (!formData.provincia) {
-      errors.ciudad = 'Provincia es requerida';
+      errors.provincia = 'Provincia es requerida';
       isValid = false;
     }
     if (!formData.ciudad) {
@@ -217,7 +223,7 @@ export default function ChekcOutView() {
       formDataToSend.append('id', formData.id);
       formDataToSend.append('numbers', formData.numbers.toString());
       if (formData.recive) {
-        formDataToSend.append('recive', formData.recive);
+        formDataToSend.append('recive', formData.recive as File);
       }
 
       const config = {
@@ -227,10 +233,12 @@ export default function ChekcOutView() {
       };
 
       const response = await axios.post(
-        'http://rifas.accumed.cloud/api/takeNumber',
+        'https://rifas.soelecsa.com/api/takeNumber',
         formDataToSend,
         config
       );
+
+      console.log(235, response.data);
 
       if (response.data.status === 200) {
         setShowSuccessModal(true); // Mostrar modal de éxito
@@ -369,8 +377,8 @@ export default function ChekcOutView() {
                     ))
                   )}
                 </select>
-                {!formData.provincia && formErrors.ciudad && (
-                  <p className="mt-1 text-sm text-red-500">Debe seleccionar una provincia</p>
+                {formErrors.provincia && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.provincia}</p>
                 )}
               </div>
 
@@ -445,7 +453,6 @@ export default function ChekcOutView() {
                     onChange={handleFileChange}
                     accept="image/*,.pdf"
                     className="hidden"
-                    required
                   />
                   <button
                     type="button"
@@ -458,8 +465,8 @@ export default function ChekcOutView() {
                     {filePreview ? 'Archivo seleccionado' : 'Ningún archivo seleccionado'}
                   </span>
                 </div>
-                {formErrors.recive && (
-                  <p className="mt-1 text-sm text-red-500">{formErrors.recive}</p>
+                {formErrors.recive?.toString() && (
+                  <p className="mt-1 text-sm text-red-500">subir un comprobante</p>
                 )}
                 {filePreview && (
                   <div className="mt-2">
@@ -468,7 +475,7 @@ export default function ChekcOutView() {
                       <img src={filePreview} alt="Preview" className="mt-1 h-20 object-cover" />
                     ) : (
                       <div className="mt-1 p-2 bg-gray-100 rounded">
-                        <p className="text-sm">Documento PDF seleccionado</p>
+                        <p className="text-sm">Documento seleccionado</p>
                       </div>
                     )}
                   </div>
@@ -480,7 +487,7 @@ export default function ChekcOutView() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full px-4 py-4 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${isSubmitting
+                  className={`w-full px-4 py-4 text-white rounded-md focus:outline-none ${isSubmitting
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-[#b91419] hover:bg-black cursor-pointer'
                     }`}
@@ -519,10 +526,9 @@ export default function ChekcOutView() {
                   <img src="https://proyectosflores.com/wp-content/uploads/2025/01/logo_bp.png" alt="Banco" className="w-full max-w-40 h-4 mb-2" />
                   <p className="flex items-start gap-2">
                     <span>
-                      Tipo de cuenta: Cuenta Corriente<br />
-                      Número: 340987654321<br />
-                      RUC: 0998765432001<br />
-                      Nombre: Tu Empresa S.A.
+                      Número: 221391347<br />
+                      CI: 0963333752<br />
+                      Nombre: Maribeth Rodríguez.
                     </span>
                   </p>
                 </div>
@@ -531,10 +537,10 @@ export default function ChekcOutView() {
                   <img src="https://proyectosflores.com/wp-content/uploads/2025/01/logo_bg.png" alt="Banco" className="w-full max-w-40 h-10 mt-6 mb-2" />
                   <p className="flex items-start gap-2">
                     <span>
-                      Tipo de cuenta: Cuenta Corriente<br />
-                      Número: 340987654321<br />
-                      RUC: 0998765432001<br />
-                      Nombre: Tu Empresa S.A.
+                      Tipo de cuenta: Cuenta Ahorros<br />
+                      Número: 48326213<br />
+                      CI: 0927391995<br />
+                      Nombre: Miguel Moreira
                     </span>
                   </p>
                 </div>
@@ -547,7 +553,7 @@ export default function ChekcOutView() {
                 <p className="flex items-start gap-2">
                   <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span>
-                  Envíanos el COMPROBANTE DE PAGO Y NÚMERO DE PEDIDO (esquina superior izquierda de esta pantalla) por WhatsApp al <a className='cursor-pointer text-blue-500' href="https://wa.me/593983941737">+593983941737</a> dando click aquí O NO SE GENERARÁN TUS NÚMEROS.
+                  Envíanos el COMPROBANTE DE PAGO Y NÚMERO DE PEDIDO (esquina superior izquierda de esta pantalla) por WhatsApp al <a className='cursor-pointer text-blue-500' href="https://wa.me/593995501485">+593995501485</a> dando click aquí O NO SE GENERARÁN TUS NÚMEROS.
                   </span>
                 </p>
 

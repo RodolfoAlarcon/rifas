@@ -33,7 +33,7 @@ export const RaffleSection = ({ gallery, precios, percentage, description, title
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-16">
+    <div className="max-w-7xl mx-auto py-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Carrusel de imágenes - Lado izquierdo */}
         <div className="w-full md:w-2/5 px-4 md:p-0">
@@ -74,7 +74,7 @@ export const RaffleSection = ({ gallery, precios, percentage, description, title
             {title}
           </h2>
           <div
-            className="prose" // Opcional: usa Tailwind Typography para estilos básicos
+            className="prose text-xl text-justify" // Opcional: usa Tailwind Typography para estilos básicos
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </div>
