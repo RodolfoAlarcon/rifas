@@ -442,42 +442,88 @@ export default function ChekcOutView() {
               </div>
 
               {/* Comprobante de Pago */}
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-white mb-2">
                   Comprobante de Pago *
                 </label>
-                <div className="mt-1 flex items-center">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*,.pdf"
-                    className="hidden"
-                  />
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*,.pdf"
+                  className="hidden"
+                />
+
+                <div className="flex items-center gap-3 mb-3">
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-black px-4 py-2 text-white rounded-md hover:bg-[#b91419] focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    className="px-4 py-2 bg-black text-white rounded-md hover:bg-[#b91419] transition-colors cursor-pointer"
                   >
                     Seleccionar archivo
                   </button>
-                  <span className="ml-2 text-sm text-gray-500">
-                    {filePreview ? 'Archivo seleccionado' : 'Ningún archivo seleccionado'}
+                  <span className="text-sm text-[#b91419]">
+                    {formData.recive ? "Archivo seleccionado ✔" : "Ningún archivo seleccionado"}
                   </span>
                 </div>
-                {formErrors.recive?.toString() && (
-                  <p className="mt-1 text-sm text-red-500">subir un comprobante</p>
+
+                {formErrors.recive && (
+                  <p className="mt-1 text-sm text-red-500">{formErrors.recive.toString()}</p>
                 )}
+
+                {/* Vista previa MEJORADA */}
                 {filePreview && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">Vista previa:</p>
-                    {filePreview.includes('image') ? (
-                      <img src={filePreview} alt="Preview" className="mt-1 h-20 object-cover" />
-                    ) : (
-                      <div className="mt-1 p-2 bg-gray-100 rounded">
-                        <p className="text-sm">Documento seleccionado</p>
-                      </div>
-                    )}
+                  <div className="mt-3">
+                    <p className="text-sm text-[#b91419] font-medium mb-2">Vista previa:</p>
+                    <div className="flex items-start gap-4 p-3">
+                      {/* Verificación REAL del tipo de archivo */}
+                      {formData.recive instanceof File && formData.recive.type.startsWith('image/') ? (
+                        <>
+                          <img
+                            src={filePreview}
+                            alt="Comprobante de pago"
+                            className="h-24 w-24 object-contain"
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm text-black mb-2">
+                              {formData.recive.name} ({Math.round(formData.recive.size / 1024)} KB)
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFilePreview(null);
+                                setFormData(prev => ({ ...prev, recive: null }));
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                              }}
+                              className="flex items-center text-sm text-[#b91419] cursor-pointer"
+                            >
+                              <X size={16} className="mr-1" /> Eliminar
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-4 w-full">
+                          <div className="h-24 w-24 flex items-center justify-center bg-gray-700 rounded-md border border-gray-600">
+                            <FileText size={32} className="text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-[#b91419]">Documento PDF</p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFilePreview(null);
+                                setFormData(prev => ({ ...prev, recive: null }));
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                              }}
+                              className="text-sm text-red-400 hover:text-red-300 mt-2"
+                            >
+                              <X size={16} className="inline mr-1" /> Eliminar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -553,7 +599,7 @@ export default function ChekcOutView() {
                 <p className="flex items-start gap-2">
                   <FileText className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <span>
-                  Envíanos el COMPROBANTE DE PAGO Y NÚMERO DE PEDIDO (esquina superior izquierda de esta pantalla) por WhatsApp al <a className='cursor-pointer text-blue-500' href="https://wa.me/593995501485">+593995501485</a> dando click aquí O NO SE GENERARÁN TUS NÚMEROS.
+                    Envíanos el COMPROBANTE DE PAGO Y NÚMERO DE PEDIDO (esquina superior izquierda de esta pantalla) por WhatsApp al <a className='cursor-pointer text-blue-500' href="https://wa.me/593995501485">+593995501485</a> dando click aquí O NO SE GENERARÁN TUS NÚMEROS.
                   </span>
                 </p>
 

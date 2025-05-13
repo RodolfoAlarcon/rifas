@@ -216,16 +216,19 @@ export const HomeView = () => {
             </div>
             <RaffleSection id={rifaMasReciente?.id || ''} gallery={gallery} price={rifaMasReciente?.price ? Number(rifaMasReciente.price) : 0} precios={precios} percentage={percentage.occupiedPercentage} description={rifaMasReciente?.description || ''} title={rifaMasReciente?.title || ''} />
 
-            <div className="max-w-4xl mx-auto px-4 py-8">
+            <div className="max-w-4xl mx-auto px-4 pt-8">
                 <h1 className="text-sm md:text-lg font-bold text-center mb-16">
                     Por la compra de tus tickets, participas automáticamente por premios instantáneos. <br />
                     Si ves una casilla con el símbolo "?", significa que ese premio aún no ha sido reclamado.<br />
                     ¡Todavía puedes ganar al instante!
                 </h1>
-                <div className="flex flex-col md:flex-row gap-4 items-center  md:justify-around">
+            </div>
+
+            <div className="max-w-7xl mx-auto ">
+            <div className="flex flex-col md:flex-row gap-3 items-center  md:justify-around">
                     {rifaMasReciente?.array_numbers
                         ?.filter(num => num.status === 'winner')
-                        .slice(0, 5) // Mostrar solo los primeros 5 ganadores
+                        .slice(0, 10) // Mostrar solo los primeros 5 ganadores
                         .map((num) => (
                             <div
                                 key={num.id}
@@ -237,7 +240,7 @@ export const HomeView = () => {
 
                     {/* Mostrar íconos de incógnita si hay menos de 5 ganadores */}
                     {Array.from({
-                        length: Math.max(0, 5 - (rifaMasReciente?.array_numbers?.filter(num => num.status === 'winner').length || 0))
+                        length: Math.max(0, 10 - (rifaMasReciente?.array_numbers?.filter(num => num.status === 'winner').length || 0))
                     }).map((_, index) => (
                         <div
                             key={`unknown-${index}`}
