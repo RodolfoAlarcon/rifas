@@ -27,7 +27,7 @@ export const HomeView = () => {
     useEffect(() => {
         const fetchTalonarios = async () => {
             try {
-                const response = await axios.get('https://rifas.soelecsa.com/api/allTalonarios');
+                const response = await axios.get('https://back.rifasmym.ec/api/allTalonarios');
 
                 setRifaMasReciente(response.data.data);
                 setFormData({
@@ -120,7 +120,7 @@ export const HomeView = () => {
 
         try {
 
-            const response = await fetch('https://rifas.soelecsa.com/api/consultNumbers', {
+            const response = await fetch('https://back.rifasmym.ec/api/consultNumbers', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
