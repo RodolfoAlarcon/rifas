@@ -225,14 +225,14 @@ export const HomeView = () => {
             </div>
 
             <div className="max-w-7xl mx-auto ">
-            <div className="flex flex-col md:flex-row gap-3 items-center  md:justify-around">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                     {rifaMasReciente?.array_numbers
                         ?.filter(num => num.status === 'winner')
                         .slice(0, 10) // Mostrar solo los primeros 5 ganadores
                         .map((num) => (
                             <div
                                 key={num.id}
-                                className="text-[#b91419]  flex items-center justify-center text-4xl font-bold"
+                                className="mb-4 text-[#b91419]  flex items-center justify-center text-4xl font-bold"
                             >
                                 {num.id}
                             </div>
@@ -244,7 +244,7 @@ export const HomeView = () => {
                     }).map((_, index) => (
                         <div
                             key={`unknown-${index}`}
-                            className="flex items-center justify-center"
+                            className="mb-4 flex items-center justify-center"
                         >
                             <HelpCircle className="w-20 h-20 text-[#b91419]" />
                         </div>
